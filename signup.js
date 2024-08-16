@@ -1,6 +1,8 @@
 
 import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
-import { auth } from "./config.js";
+import { auth ,db } from "./config.js";
+import { collection, addDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"; 
+
 
 
 let form = document.querySelector('#form')
@@ -32,10 +34,34 @@ createUserWithEmailAndPassword(auth, email.value, password.value)
   .then((userCredential) => {
     // Signed up 
     const user = userCredential.user;
-    console.log(user);
+    console.log(user.id);
     alert('register done')
-    window.location = 'login.html'
     
+    async function adddata() {
+      
+      try {
+        const docRef = await addDoc(collection(db, "user"), {
+          firstname: firstname.value,
+          lastname: lastname.value,
+          email: email.value,
+          // userimage: userimageurl,
+          uid: user.uid,
+          // userinfo:user
+        });
+        console.log("Document written with ID: ", docRef.id);
+        window.location = 'login.html'
+      } catch (e) {
+        console.error("Error adding document: ", e);
+      }
+    }
+    
+    
+    
+    
+    adddata()
+
+    // window.location = 'login.html'
+
     // ...
   })
   .catch((error) => {
